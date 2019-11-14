@@ -39,6 +39,13 @@ func (rb *RequestBuilder) doRequest(verb string, reqURL string, reqBody interfac
 			return
 		}
 
+		// Change URL to point to Mockup server
+		reqURL, cacheURL, err = checkMockup(reqURL)
+		if err != nil {
+			result.Err = err
+			return
+		}
+
 		//Get Client (client + transport)
 		client := rb.getClient()
 
@@ -87,6 +94,26 @@ func (rb *RequestBuilder) doRequest(verb string, reqURL string, reqBody interfac
 
 	return
 
+}
+
+func checkMockup(reqURL string) (string, string, error) {
+
+	cacheURL := reqURL
+
+	if mockUpEnv {
+
+		rURL, err := url.Parse(reqURL)
+		if err != nil {
+			return reqURL, cacheURL, err
+		}
+
+		rURL.Scheme = mockServerURL.Scheme
+		rURL.Host = mockServerURL.Host
+
+		return rURL.String(), cacheURL, nil
+	}
+
+	return reqURL, cacheURL, nil
 }
 
 func (rb *RequestBuilder) marshalReqBody(body interface{}) (b []byte, err error) {
@@ -213,6 +240,11 @@ func (rb *RequestBuilder) setParams(req *http.Request, cacheResp *Response, cach
 	//Default headers
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Cache-Control", "no-cache")
+
+	//If mock
+	if mockUpEnv {
+		req.Header.Set("X-Original-URL", cacheURL)
+	}
 
 	// Basic Auth
 	if rb.BasicAuth != nil {
