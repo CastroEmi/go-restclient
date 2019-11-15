@@ -70,4 +70,24 @@ func init() {
 		rwMutex:  sync.RWMutex{},
 	}
 
+	go resourceCache.lruOperations()
+
+}
+
+func (rCache *resourceTTLLRUMap) lruOperations() {
+
+	for {
+		msg := <-rCache.lruChan
+
+		switch msg.operation {
+		case move:
+			rCache.lruList.MoveToFront(msg.resp.listElement)
+		case push:
+			msg.resp.listElement = rCache.lruList.PushFront(msg.resp.Request.URL.String())
+		case delete:
+			rCache.lruList.Remove(msg.resp.listElement)
+		case last:
+			rCache.popChan <- rCache.lruList.Back().Value.(string)
+		}
+	}
 }
