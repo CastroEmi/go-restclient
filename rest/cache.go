@@ -58,3 +58,16 @@ type resourceTTLLRUMap struct {
 	popChan  chan string
 	rwMutex  sync.RWMutex // Read Write Locking Mutex
 }
+
+func init() {
+	resourceCache = &resourceTTLLRUMap{
+		cache:    make(map[string]*Response),
+		skipList: newSkipList(),
+		lruList:  list.New(),
+		lruChan:  make(chan *lruMsg, 10000),
+		ttlChan:  make(chan bool, 1000),
+		popChan:  make(chan string),
+		rwMutex:  sync.RWMutex{},
+	}
+
+}
