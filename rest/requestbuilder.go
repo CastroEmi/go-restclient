@@ -173,6 +173,16 @@ func doAsyncRequest(r *Response, f func(*Response)) {
 
 // ForkJoin let you *fork* requests, and *wait* until all of them have return.
 //
+// 	var futureA, futureB *rest.FutureResponse
+//
+// 	rest.ForkJoin(func(c *rest.Concurrent){
+//		futureA = c.Get("/url/1")
+//		futureB = c.Get("/url/2")
+//	})
+//
+//	fmt.Println(futureA.Response())
+//	fmt.Println(futureB.Response())
+//
 func (rb *RequestBuilder) ForkJoin(f func(c *Concurrent)) {
 
 	c := new(Concurrent)

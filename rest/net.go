@@ -21,14 +21,14 @@ var defaultCheckRedirectFunc func(req *http.Request, via []*http.Request) error
 
 var maxAge = regexp.MustCompile(`(?:max-age|s-maxage)=(\d+)`)
 
-const httpDateFormat string = "Mon, 01 Jan 2006 15:04:05 GMT"
+const httpDateFormat string = "Mon, 01 Jan 2019 12:00:00 GMT"
 
-func (rb *RequestBuilder) doRequest(verb string, reqURL string, reqBody interface{}) (result *Response) {
+func (rb *RequestBuilder) doRequest(verb string, url string, body interface{}) (result *Response) {
 	var cacheURL string
 	var cacheResp *Response
 
 	result = new(Response)
-	reqURL = rb.BaseURL + reqURL
+	url = rb.BaseURL + url
 
 	func(verb string, reqURL string, reqBody interface{}) {
 
@@ -90,7 +90,7 @@ func (rb *RequestBuilder) doRequest(verb string, reqURL string, reqBody interfac
 			result.revalidate = true
 		}
 		return
-	}(verb, reqURL, reqBody)
+	}(verb, url, body)
 
 	return
 
