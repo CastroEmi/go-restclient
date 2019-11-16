@@ -26,7 +26,7 @@ var server = httptest.NewServer(tmux)
 var users []User
 
 var userList = []string{
-	"Hernan", "Mariana", "Matilda", "Juan", "Pedro", "John", "Axel", "Mateo",
+	"Max", "Dario", "Demian", "Juana", "Andy", "John", "Susy", "Felicitas",
 }
 
 var rb = RequestBuilder{
